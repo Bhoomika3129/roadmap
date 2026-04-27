@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agentic AI Roadmap</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0e10;
+    --surface: #17171a;
+    --surface2: #1f1f24;
+    --border: #2a2a30;
+    --accent: #a78bfa;
+    --accent2: #34d399;
+    --accent3: #fb923c;
+    --accent4: #60a5fa;
+    --text: #f0f0f3;
+    --text-muted: #7a7a8a;
+    --text-dim: #3f3f50;
+    --danger: #f87171;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+  }
+  .container { max-width: 760px; margin: 0 auto; }
+
+  header { margin-bottom: 3rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+  .header-tag { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.6rem; }
+  h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 600; line-height: 1.2; margin-bottom: 0.5rem; }
+  .header-sub { font-size: 14px; color: var(--text-muted); }
+
+  .overall-progress { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 2.5rem; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+  .progress-label { font-size: 13px; color: var(--text-muted); flex-shrink: 0; }
+  .progress-track { flex: 1; min-width: 120px; height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 99px; transition: width 0.4s ease; }
+  .progress-pct { font-family: 'Space Mono', monospace; font-size: 13px; color: var(--accent); flex-shrink: 0; min-width: 40px; text-align: right; }
+
+  .phase { margin-bottom: 1.5rem; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; background: var(--surface); }
+  .phase-header { display: flex; align-items: center; gap: 12px; padding: 1rem 1.25rem; cursor: pointer; user-select: none; transition: background 0.15s; }
+  .phase-header:hover { background: var(--surface2); }
+  .phase-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .phase-name { font-weight: 500; font-size: 15px; flex: 1; }
+  .phase-weeks { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--text-muted); }
+  .phase-mini-bar { width: 60px; height: 4px; background: var(--border); border-radius: 99px; overflow: hidden; flex-shrink: 0; }
+  .phase-mini-fill { height: 100%; border-radius: 99px; transition: width 0.3s; }
+  .phase-pct-text { font-family: 'Space Mono', monospace; font-size: 11px; min-width: 32px; text-align: right; }
+  .chevron { font-size: 12px; color: var(--text-muted); transition: transform 0.2s; flex-shrink: 0; }
+  .phase.open .chevron { transform: rotate(90deg); }
+
+  .phase-body { padding: 0 1.25rem 1.25rem; display: none; }
+  .phase.open .phase-body { display: block; }
+
+  .section-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; font-family: 'Space Mono', monospace; margin: 1rem 0 0.5rem; }
+
+  .topic-list { display: flex; flex-direction: column; gap: 4px; }
+  .topic-item { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 8px; transition: background 0.1s; }
+  .topic-item:hover { background: var(--surface2); }
+  .topic-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
+  .topic-item label { font-size: 14px; color: var(--text); cursor: pointer; flex: 1; line-height: 1.4; }
+  .topic-item.done label { color: var(--text-muted); text-decoration: line-through; }
+  .delete-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; padding: 2px 5px; border-radius: 4px; opacity: 0; transition: opacity 0.15s, color 0.15s; }
+  .topic-item:hover .delete-btn { opacity: 1; }
+  .delete-btn:hover { color: var(--danger); }
+
+  .add-topic-row { display: flex; gap: 8px; margin-top: 10px; }
+  .add-topic-input { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 7px 12px; font-size: 13px; color: var(--text); font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.15s; }
+  .add-topic-input::placeholder { color: var(--text-dim); }
+  .add-topic-input:focus { border-color: var(--accent); }
+  .add-btn { background: var(--accent); color: #0e0e10; border: none; border-radius: 8px; padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: opacity 0.15s; white-space: nowrap; }
+  .add-btn:hover { opacity: 0.85; }
+
+  .resources { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+  .res-chip { font-size: 12px; padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border); color: var(--text-muted); text-decoration: none; background: var(--surface2); transition: border-color 0.15s, color 0.15s; }
+  .res-chip:hover { border-color: var(--accent); color: var(--accent); }
+
+  .note-area { margin-top: 10px; }
+  .note-input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 13px; color: var(--text); font-family: 'DM Sans', sans-serif; resize: vertical; min-height: 60px; outline: none; transition: border-color 0.15s; }
+  .note-input::placeholder { color: var(--text-dim); }
+  .note-input:focus { border-color: var(--accent4); }
+
+  .divider { height: 1px; background: var(--border); margin: 0.75rem 0; }
+
+  .tip-box { background: var(--surface2); border-left: 3px solid var(--accent2); border-radius: 0 8px 8px 0; padding: 0.75rem 1rem; margin-top: 1rem; font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+  .tip-box strong { color: var(--accent2); }
+
+  footer { text-align: center; margin-top: 3rem; font-size: 12px; color: var(--text-dim); font-family: 'Space Mono', monospace; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="header-tag">// your learning path</div>
+    <h1>Agentic AI Roadmap</h1>
+    <p class="header-sub">Weeks 9–36 · 30 min/day · Check off topics as you go. Add your own anytime.</p>
+  </header>
+
+  <div class="overall-progress">
+    <span class="progress-label">Overall progress</span>
+    <div class="progress-track"><div class="progress-fill" id="overall-fill" style="width:0%"></div></div>
+    <span class="progress-pct" id="overall-pct">0%</span>
+  </div>
+
+  <div id="phases-container"></div>
+
+  <div class="tip-box">
+    <strong>Tip:</strong> Your SQL knowledge helps a lot in Phase 5+ — agents often query databases. You're already ahead of most learners at that stage.
+  </div>
+
+  <footer>progress saved in your browser · refresh anytime</footer>
+</div>
+
+<script>
+const PHASES = [
+  {
+    id: "p3",
+    name: "What is AI & Machine Learning?",
+    weeks: "Weeks 9–12",
+    color: "#fb923c",
+    topics: [
+      "What is AI?",
+      "ML vs AI vs Deep Learning — the difference",
+      "How models learn from data",
+      "What is training vs testing?",
+      "Neural networks (just the idea, no math)",
+      "What is a dataset?"
+    ],
+    resources: [
+      { label: "3Blue1Brown — Neural nets", url: "https://www.youtube.com/@3blue1brown" },
+      { label: "Google DeepMind channel", url: "https://www.youtube.com/@GoogleDeepMind" },
+      { label: "DeepLearning.AI free courses", url: "https://www.deeplearning.ai/short-courses/" },
+      { label: "Elements of AI (free)", url: "https://www.elementsofai.com/" }
+    ]
+  },
+  {
+    id: "p4",
+    name: "Large Language Models (LLMs)",
+    weeks: "Weeks 13–18",
+    color: "#a78bfa",
+    topics: [
+      "What is an LLM?",
+      "What are tokens?",
+      "What are embeddings?",
+      "Prompt engineering basics",
+      "System prompt vs user prompt",
+      "Temperature and other parameters",
+      "Using the Claude API (hands-on)",
+      "Using the OpenAI API (hands-on)"
+    ],
+    resources: [
+      { label: "Andrej Karpathy (must-watch)", url: "https://www.youtube.com/@AndrejKarpathy" },
+      { label: "Matthew Berman", url: "https://www.youtube.com/@MatthewBerman" },
+      { label: "Anthropic docs", url: "https://docs.anthropic.com" },
+      { label: "learnprompting.org", url: "https://learnprompting.org" },
+      { label: "Prompt Engineering Guide", url: "https://www.promptingguide.ai" }
+    ]
+  },
+  {
+    id: "p5",
+    name: "Agentic AI core concepts",
+    weeks: "Weeks 19–26",
+    color: "#34d399",
+    topics: [
+      "What is an AI agent?",
+      "Tool use and function calling",
+      "The ReAct pattern (Reason + Act)",
+      "Short-term memory (context window)",
+      "Long-term memory (vector databases)",
+      "Planning and task decomposition",
+      "Chain-of-thought prompting",
+      "Multi-agent systems overview",
+      "LangChain basics",
+      "ChromaDB / Pinecone (vector DBs)"
+    ],
+    resources: [
+      { label: "AI Agents in LangGraph (free)", url: "https://www.deeplearning.ai/short-courses/ai-agents-in-langgraph/" },
+      { label: "AI Jason — YouTube", url: "https://www.youtube.com/@AIJasonZ" },
+      { label: "LangChain docs", url: "https://python.langchain.com/docs/" },
+      { label: "CrewAI docs", url: "https://docs.crewai.com" }
+    ]
+  },
+  {
+    id: "p6",
+    name: "Build real projects",
+    weeks: "Weeks 27–36",
+    color: "#60a5fa",
+    topics: [
+      "Project 1: Chatbot with memory",
+      "Project 2: Web search agent",
+      "Project 3: PDF Q&A agent",
+      "Project 4: Code writing agent",
+      "Project 5: Multi-agent pipeline",
+      "Deploy your project online (GitHub Pages / Vercel)",
+      "Project 6: Your own idea!"
+    ],
+    resources: [
+      { label: "LangChain GitHub examples", url: "https://github.com/langchain-ai/langchain" },
+      { label: "AI Jason — projects", url: "https://www.youtube.com/@AIJasonZ" },
+      { label: "LangSmith (debugging agents)", url: "https://smith.langchain.com" },
+      { label: "Vercel (free hosting)", url: "https://vercel.com" }
+    ]
+  }
+];
+
+function getStorage() {
+  try { return JSON.parse(localStorage.getItem('agentic_roadmap') || '{}'); } catch { return {}; }
+}
+function saveStorage(data) {
+  try { localStorage.setItem('agentic_roadmap', JSON.stringify(data)); } catch {}
+}
+
+function renderAll() {
+  const storage = getStorage();
+  const container = document.getElementById('phases-container');
+  container.innerHTML = '';
+
+  PHASES.forEach(phase => {
+    const pData = storage[phase.id] || { checked: {}, custom: [], notes: '' };
+    const allTopics = [...phase.topics, ...(pData.custom || [])];
+    const checkedCount = allTopics.filter((_, i) => pData.checked[i]).length;
+    const pct = allTopics.length ? Math.round(checkedCount / allTopics.length * 100) : 0;
+    const isOpen = storage[phase.id + '_open'] !== false;
+
+    const div = document.createElement('div');
+    div.className = 'phase' + (isOpen ? ' open' : '');
+    div.innerHTML = `
+      <div class="phase-header" onclick="togglePhase('${phase.id}')">
+        <div class="phase-dot" style="background:${phase.color}"></div>
+        <span class="phase-name">${phase.name}</span>
+        <span class="phase-weeks">${phase.weeks}</span>
+        <div class="phase-mini-bar"><div class="phase-mini-fill" style="width:${pct}%; background:${phase.color}"></div></div>
+        <span class="phase-pct-text" style="color:${phase.color}">${pct}%</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="phase-body">
+        <div class="section-label">Topics</div>
+        <div class="topic-list" id="topics-${phase.id}">
+          ${allTopics.map((t, i) => {
+            const checked = !!pData.checked[i];
+            const isCustom = i >= phase.topics.length;
+            return `<div class="topic-item${checked ? ' done' : ''}" id="ti-${phase.id}-${i}">
+              <input type="checkbox" id="cb-${phase.id}-${i}" ${checked ? 'checked' : ''} onchange="toggleCheck('${phase.id}', ${i}, this.checked)">
+              <label for="cb-${phase.id}-${i}">${t}</label>
+              ${isCustom ? `<button class="delete-btn" onclick="deleteTopic('${phase.id}', ${i})" title="Remove">✕</button>` : ''}
+            </div>`;
+          }).join('')}
+        </div>
+        <div class="add-topic-row">
+          <input class="add-topic-input" id="new-topic-${phase.id}" type="text" placeholder="Add your own topic…" onkeydown="if(event.key==='Enter') addTopic('${phase.id}')">
+          <button class="add-btn" onclick="addTopic('${phase.id}')">+ Add</button>
+        </div>
+        <div class="divider"></div>
+        <div class="section-label">Resources</div>
+        <div class="resources">
+          ${phase.resources.map(r => `<a class="res-chip" href="${r.url}" target="_blank">${r.label}</a>`).join('')}
+        </div>
+        <div class="divider"></div>
+        <div class="section-label">My notes</div>
+        <div class="note-area">
+          <textarea class="note-input" placeholder="Write anything you want to remember…" onchange="saveNote('${phase.id}', this.value)">${pData.notes || ''}</textarea>
+        </div>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+
+  updateOverall();
+}
+
+function togglePhase(id) {
+  const storage = getStorage();
+  storage[id + '_open'] = !document.querySelector(`[onclick="togglePhase('${id}')"]`).closest('.phase').classList.contains('open');
+  saveStorage(storage);
+  renderAll();
+}
+
+function toggleCheck(phaseId, idx, checked) {
+  const storage = getStorage();
+  if (!storage[phaseId]) storage[phaseId] = { checked: {}, custom: [], notes: '' };
+  storage[phaseId].checked[idx] = checked;
+  saveStorage(storage);
+
+  const item = document.getElementById(`ti-${phaseId}-${idx}`);
+  if (item) item.classList.toggle('done', checked);
+
+  const phase = PHASES.find(p => p.id === phaseId);
+  const pData = storage[phaseId];
+  const allTopics = [...phase.topics, ...(pData.custom || [])];
+  const checkedCount = allTopics.filter((_, i) => pData.checked[i]).length;
+  const pct = allTopics.length ? Math.round(checkedCount / allTopics.length * 100) : 0;
+
+  const fill = document.querySelector(`#phases-container .phase-mini-fill`);
+  const header = document.querySelector(`[onclick="togglePhase('${phaseId}')"]`);
+  if (header) {
+    header.querySelector('.phase-mini-fill').style.width = pct + '%';
+    header.querySelector('.phase-pct-text').textContent = pct + '%';
+  }
+  updateOverall();
+}
+
+function addTopic(phaseId) {
+  const input = document.getElementById(`new-topic-${phaseId}`);
+  const val = input.value.trim();
+  if (!val) return;
+  const storage = getStorage();
+  if (!storage[phaseId]) storage[phaseId] = { checked: {}, custom: [], notes: '' };
+  if (!storage[phaseId].custom) storage[phaseId].custom = [];
+  storage[phaseId].custom.push(val);
+  saveStorage(storage);
+  renderAll();
+}
+
+function deleteTopic(phaseId, idx) {
+  const storage = getStorage();
+  const phase = PHASES.find(p => p.id === phaseId);
+  const customIdx = idx - phase.topics.length;
+  if (customIdx < 0) return;
+  if (!storage[phaseId]) return;
+  storage[phaseId].custom.splice(customIdx, 1);
+  const newChecked = {};
+  const allAfter = [...phase.topics, ...storage[phaseId].custom];
+  let shift = 0;
+  for (let i = 0; i < phase.topics.length + customIdx + 1; i++) {
+    if (storage[phaseId].checked[i] !== undefined && i !== idx) {
+      newChecked[i < idx ? i : i - 1] = storage[phaseId].checked[i];
+    }
+  }
+  storage[phaseId].checked = newChecked;
+  saveStorage(storage);
+  renderAll();
+}
+
+function saveNote(phaseId, val) {
+  const storage = getStorage();
+  if (!storage[phaseId]) storage[phaseId] = { checked: {}, custom: [], notes: '' };
+  storage[phaseId].notes = val;
+  saveStorage(storage);
+}
+
+function updateOverall() {
+  const storage = getStorage();
+  let total = 0, done = 0;
+  PHASES.forEach(phase => {
+    const pData = storage[phase.id] || { checked: {}, custom: [] };
+    const allTopics = [...phase.topics, ...(pData.custom || [])];
+    total += allTopics.length;
+    done += allTopics.filter((_, i) => pData.checked[i]).length;
+  });
+  const pct = total ? Math.round(done / total * 100) : 0;
+  document.getElementById('overall-fill').style.width = pct + '%';
+  document.getElementById('overall-pct').textContent = pct + '%';
+}
+
+renderAll();
+</script>
+</body>
+</html>
